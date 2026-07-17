@@ -1,91 +1,113 @@
-import UploadCard from "@/components/upload/UploadCard";
 import Link from "next/link";
+
+import UploadCard from "@/components/upload/UploadCard";
+
+const features = [
+  {
+    emoji: "⚡",
+    title: "Instant Summaries",
+    text: "Generate concise summaries of research papers in seconds.",
+  },
+  {
+    emoji: "💬",
+    title: "Chat with Papers",
+    text: "Ask natural-language questions and get grounded answers with citations.",
+  },
+  {
+    emoji: "📄",
+    title: "Page Citations",
+    text: "Every response links back to the exact page in the original paper.",
+  },
+  {
+    emoji: "🧠",
+    title: "Methodology Extraction",
+    text: "Quickly understand datasets, models, and experimental setups.",
+  },
+  {
+    emoji: "📚",
+    title: "Personal Library",
+    text: "Store and revisit all of your uploaded research papers.",
+  },
+  {
+    emoji: "🔍",
+    title: "RAG Powered",
+    text: "Answers are generated only from your paper—not from outside knowledge.",
+  },
+];
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl px-6 py-16">
+    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100">
+      <div className="mx-auto max-w-7xl px-6">
 
         {/* Hero */}
 
-        <div className="mx-auto max-w-3xl text-center">
+        <section className="py-24 text-center">
 
-          <h1 className="text-6xl font-bold tracking-tight">
+          <span className="rounded-full border bg-white px-4 py-2 text-sm font-medium shadow-sm">
+            AI-powered Research Assistant
+          </span>
+
+          <h1 className="mt-8 text-6xl font-extrabold tracking-tight md:text-7xl">
             PaperLens
           </h1>
 
-          <p className="mt-6 text-2xl text-gray-700">
-            Understand research papers in minutes, not hours.
+          <p className="mx-auto mt-8 max-w-3xl text-xl leading-8 text-gray-600">
+            Understand research papers in minutes instead of hours.
+            Upload any PDF to generate structured summaries,
+            chat with the paper, and jump directly to cited pages.
           </p>
 
-          <p className="mt-4 text-lg text-gray-500">
-            Upload any research paper and instantly get AI-generated
-            summaries, methodology extraction, strengths,
-            limitations and chat with your paper.
-          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
 
-        </div>
+            <Link
+              href="/library"
+              className="rounded-xl bg-black px-8 py-4 text-lg font-semibold text-white transition hover:scale-105"
+            >
+              📚 Open Library
+            </Link>
 
-        {/* Buttons */}
+            <a
+              href="#upload"
+              className="rounded-xl border border-gray-300 bg-white px-8 py-4 text-lg font-semibold shadow-sm transition hover:bg-gray-100"
+            >
+              Upload Paper
+            </a>
 
-        <div className="mt-10 flex justify-center gap-4">
+          </div>
 
-          <Link
-            href="/library"
-            className="rounded-xl border border-gray-300 bg-white px-8 py-4 text-lg font-semibold shadow-sm transition hover:bg-gray-100"
-          >
-            📚 Open Library
-          </Link>
-
-        </div>
-
-        {/* Upload */}
-
-        <div className="mx-auto mt-14 max-w-3xl">
-          <UploadCard />
-        </div>
+        </section>
 
         {/* Features */}
 
-        <div className="mt-20 grid gap-6 md:grid-cols-3">
+        <section className="grid gap-6 md:grid-cols-3">
 
-          <FeatureCard
-            emoji="⚡"
-            title="Instant Summary"
-            text="Generate concise summaries of research papers in seconds."
-          />
+          {features.map((feature) => (
+            <FeatureCard
+              key={feature.title}
+              {...feature}
+            />
+          ))}
 
-          <FeatureCard
-            emoji="💬"
-            title="Chat with Paper"
-            text="Ask natural language questions about any uploaded paper."
-          />
+        </section>
 
-          <FeatureCard
-            emoji="📖"
-            title="Original PDF"
-            text="Read the paper alongside AI explanations."
-          />
+        {/* Upload */}
 
-          <FeatureCard
-            emoji="📌"
-            title="Page References"
-            text="Every answer links back to the original paper."
-          />
+        <section
+          id="upload"
+          className="mx-auto mt-28 max-w-3xl pb-24"
+        >
+          <h2 className="mb-3 text-center text-4xl font-bold">
+            Upload your first paper
+          </h2>
 
-          <FeatureCard
-            emoji="🧠"
-            title="Methodology"
-            text="Understand the methods and experimental setup quickly."
-          />
+          <p className="mb-10 text-center text-gray-600">
+            Drag & drop a research paper to start chatting with it.
+          </p>
 
-          <FeatureCard
-            emoji="⭐"
-            title="Research Insights"
-            text="View contributions, strengths and limitations instantly."
-          />
+          <UploadCard />
 
-        </div>
+        </section>
 
       </div>
     </main>
@@ -102,16 +124,20 @@ function FeatureCard({
   text: string;
 }) {
   return (
-    <div className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md">
-      <div className="text-4xl">{emoji}</div>
+    <div className="rounded-2xl border bg-white p-8 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
 
-      <h3 className="mt-4 text-2xl font-bold">
+      <div className="text-5xl">
+        {emoji}
+      </div>
+
+      <h3 className="mt-5 text-2xl font-bold">
         {title}
       </h3>
 
-      <p className="mt-3 text-gray-600">
+      <p className="mt-3 leading-7 text-gray-600">
         {text}
       </p>
+
     </div>
   );
 }

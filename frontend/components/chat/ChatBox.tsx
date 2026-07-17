@@ -159,9 +159,9 @@ export default function ChatBox({
                       <button
                         key={i}
                         onClick={() => onJumpToPage?.(source.page)}
-                        className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200"
+                        className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-200 hover:text-blue-900"
                       >
-                        📄 p.{source.page}
+                        📄 Page {source.page}
                       </button>
                     ))}
                   </div>

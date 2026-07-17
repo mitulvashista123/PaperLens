@@ -12,19 +12,11 @@ export default function PDFViewer({
   page,
 }: Props) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-      <div className="border-b p-4">
-        <h2 className="text-lg font-semibold">
-          📄 Original Paper
-        </h2>
-      </div>
-
-      <iframe
-        key={page}
-        src={`${API_URL}/paper/${paperId}/pdf#page=${page}`}
-        title="Original Research Paper"
-        className="h-225 w-full"
-      />
-    </div>
+    <iframe
+      key={page}
+      src={`${API_URL}/paper/${paperId}/pdf#page=${page}`}
+      title="Original Research Paper"
+      className="h-[900px] w-full rounded-b-2xl"
+    />
   );
 }

@@ -1,103 +1,67 @@
 import { API_URL } from "@/lib/config";
 
-export async function uploadPaper(file: File) {
-  const formData = new FormData();
+async function api<T>(url: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_URL}${url}`, options);
 
+  if (!response.ok) {
+    let message = "Something went wrong.";
+
+    try {
+      const data = await response.json();
+      message = data.detail ?? message;
+    } catch {
+      // ignore
+    }
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export function uploadPaper(file: File) {
+  const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`${API_URL}/upload/`, {
+  return api("/upload/", {
     method: "POST",
     body: formData,
   });
-
-  if (!response.ok) {
-    throw new Error("Upload failed");
-  }
-
-  return response.json();
 }
 
-export async function getSummary(paperId: string) {
-  const response = await fetch(
-    `${API_URL}/summary/${paperId}`
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch summary");
-  }
-
-  return response.json();
+export function getSummary(paperId: string) {
+  return api(`/summary/${paperId}`);
 }
 
-export async function getPaper(
-  paperId: string
-) {
-  const response = await fetch(
-    `${API_URL}/paper/${paperId}`,
-    {
-      cache: "no-store",
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch paper");
-  }
-
-  return response.json();
+export function getPaper(paperId: string) {
+  return api(`/paper/${paperId}`, {
+    cache: "no-store",
+  });
 }
 
-export async function chatWithPaper(
+export function chatWithPaper(
   paperId: string,
   question: string
 ) {
-  const res = await fetch(
-    `${API_URL}/chat/${paperId}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question,
-      }),
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Chat failed");
-  }
-
-  return res.json();
+  return api(`/chat/${paperId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      question,
+    }),
+  });
 }
 
-export async function getLibrary() {
-  const res = await fetch(
-    `${API_URL}/library`,
-    {
-      cache: "no-store",
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch library");
-  }
-
-  return res.json();
+export function getLibrary() {
+  return api("/library", {
+    cache: "no-store",
+  });
 }
 
-export async function deletePaper(
-  paperId: string
-) {
-  const res = await fetch(
-    `${API_URL}/paper/${paperId}`,
-    {
-      method: "DELETE",
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to delete paper");
-  }
-
-  return res.json();
+export function deletePaper(paperId: string) {
+  return api(`/paper/${paperId}`, {
+    method: "DELETE",
+  });
 }

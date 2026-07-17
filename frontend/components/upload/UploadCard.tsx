@@ -3,9 +3,18 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud, FileText } from "lucide-react";
+import { UploadCloud, FileText, CheckCircle2, Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { uploadPaper } from "@/lib/api";
+
+const steps = [
+  "Uploading PDF",
+  "Extracting text",
+  "Creating embeddings",
+  "Generating summary",
+  "Preparing chat",
+];
 
 export default function UploadCard() {
   const router = useRouter();
@@ -14,33 +23,46 @@ export default function UploadCard() {
   const [uploading, setUploading] = useState(false);
   const [paperId, setPaperId] = useState<string | null>(null);
 
+  const [currentStep, setCurrentStep] = useState(0);
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
     }
   }, []);
 
-  const handleUpload = async () => {
+  async function handleUpload() {
     if (!file) return;
 
     try {
       setUploading(true);
 
+      let step = 0;
+
+      const interval = setInterval(() => {
+        step++;
+
+        if (step < steps.length) {
+          setCurrentStep(step);
+        }
+      }, 2500);
+
       const result = await uploadPaper(file);
 
-      console.log(result);
+      clearInterval(interval);
+
+      setCurrentStep(steps.length);
 
       setPaperId(result.paper_id);
 
-      // Navigate to the summary page
       router.push(`/paper/${result.paper_id}`);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Upload failed.");
     } finally {
       setUploading(false);
     }
-  };
+  }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -52,33 +74,37 @@ export default function UploadCard() {
 
   return (
     <div className="mx-auto mt-12 max-w-2xl">
+
       <div
         {...(!uploading ? getRootProps() : {})}
-        className={`cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-all ${
-          isDragActive
+        className={`rounded-2xl border-2 border-dashed p-12 text-center transition ${
+          uploading
+            ? "border-blue-300 bg-blue-50"
+            : isDragActive
             ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:border-blue-500"
+            : "cursor-pointer border-gray-300 hover:border-blue-500"
         }`}
       >
         {!uploading && <input {...getInputProps()} />}
 
-        <UploadCloud className="mx-auto h-12 w-12 text-blue-500" />
+        <UploadCloud className="mx-auto h-14 w-14 text-blue-600" />
 
-        <h2 className="mt-4 text-2xl font-semibold">
+        <h2 className="mt-5 text-3xl font-bold">
           {uploading
-            ? "Processing Research Paper..."
+            ? "Analyzing Paper..."
             : "Upload Research Paper"}
         </h2>
 
-        <p className="mt-2 text-gray-500">
+        <p className="mt-3 text-gray-500">
           {uploading
-            ? "Parsing PDF, creating embeddings and generating AI summary..."
-            : "Drag & Drop a PDF here or click to browse."}
+            ? "This usually takes 20–40 seconds."
+            : "Drag & drop a PDF or click to browse."}
         </p>
       </div>
 
       {file && (
-        <div className="mt-8 rounded-xl border p-5">
+        <div className="mt-8 rounded-2xl border bg-white p-6 shadow-sm">
+
           <div className="flex items-center gap-4">
             <FileText className="text-red-500" />
 
@@ -91,16 +117,45 @@ export default function UploadCard() {
             </div>
           </div>
 
-          <Button
-            className="mt-6 w-full"
-            onClick={handleUpload}
-            disabled={uploading}
-          >
-            {uploading ? "Processing PDF & Generating AI Summary..." : "Upload Paper"}
-          </Button>
+          {!uploading ? (
+            <Button
+              className="mt-6 w-full"
+              onClick={handleUpload}
+            >
+              Upload Paper
+            </Button>
+          ) : (
+            <div className="mt-8 space-y-4">
+
+              {steps.map((step, index) => (
+                <div
+                  key={step}
+                  className="flex items-center gap-3"
+                >
+                  {index < currentStep ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  ) : index === currentStep ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                  ) : (
+                    <div className="h-5 w-5 rounded-full border" />
+                  )}
+
+                  <span
+                    className={
+                      index <= currentStep
+                        ? "font-medium"
+                        : "text-gray-400"
+                    }
+                  >
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {paperId && (
-            <p className="mt-4 text-center text-sm text-green-600">
+            <p className="mt-5 text-center text-sm text-green-600">
               Paper ID: {paperId}
             </p>
           )}

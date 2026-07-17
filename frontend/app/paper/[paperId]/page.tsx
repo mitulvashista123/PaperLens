@@ -1,6 +1,3 @@
-import ChatBox from "@/components/chat/ChatBox";
-import SectionCard from "@/components/paper/SectionCard";
-import PDFViewer from "@/components/paper/PDFViewer";
 import PaperViewer from "@/components/paper/PaperViewer";
 import { API_URL } from "@/lib/config";
 
@@ -11,13 +8,6 @@ type SummaryResponse = {
     authors: string[];
     pages: number;
     sections: string[];
-  };
-  summary: {
-    summary: string;
-    contributions: string[];
-    methodology: string;
-    strengths: string[];
-    limitations: string[];
   };
 };
 
@@ -32,7 +22,7 @@ async function getSummary(
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch summary");
+    throw new Error("Failed to fetch paper");
   }
 
   return res.json();
@@ -47,15 +37,13 @@ export default async function PaperPage({
 
   const data = await getSummary(paperId);
 
-  const s = data.summary;
   const m = data.metadata;
 
   return (
-    <main className="mx-auto max-w-7xl p-8">
-
-      {/* Header */}
+    <main className="mx-auto max-w-7xl px-6 py-8">
 
       <div className="mb-10">
+
         <h1 className="text-4xl font-bold">
           {m.title}
         </h1>
@@ -68,55 +56,10 @@ export default async function PaperPage({
           <span>📄 {m.pages} pages</span>
           <span>🆔 {paperId}</span>
         </div>
-      </div>
-
-      {/* PDF + Summary */}
-
-      <div className="grid gap-8 lg:grid-cols-2">
-
-        <PaperViewer paperId={paperId} />
-
-        <div className="space-y-6">
-
-          <SectionCard title="📄 Summary">
-            <p className="leading-7">
-              {s.summary}
-            </p>
-          </SectionCard>
-
-          <SectionCard title="⭐ Contributions">
-            <ul className="list-disc space-y-2 pl-6">
-              {s.contributions.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </SectionCard>
-
-          <SectionCard title="🧠 Methodology">
-            <p className="leading-7">
-              {s.methodology}
-            </p>
-          </SectionCard>
-
-          <SectionCard title="✅ Strengths">
-            <ul className="list-disc space-y-2 pl-6">
-              {s.strengths.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </SectionCard>
-
-          <SectionCard title="⚠️ Limitations">
-            <ul className="list-disc space-y-2 pl-6">
-              {s.limitations.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </SectionCard>
-
-        </div>
 
       </div>
+
+      <PaperViewer paperId={paperId} />
 
     </main>
   );
