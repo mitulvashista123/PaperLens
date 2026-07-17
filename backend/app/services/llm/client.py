@@ -1,0 +1,13 @@
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+
+client = OpenAI(
+    api_key=os.getenv("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
+)
+
+MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
